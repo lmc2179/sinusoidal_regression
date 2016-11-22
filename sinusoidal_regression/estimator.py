@@ -14,13 +14,13 @@ class SinusoidalRegression(object):
 
     def predict(self, t):
         std_mle, phase_mle, mean_mle = self.params_
-        data_fit = std_mle * np.sin(t + phase_mle) + mean_mle
-        return data_fit
+        y_predicted = std_mle * np.sin(t + phase_mle) + mean_mle
+        return y_predicted
 
 if __name__ == '__main__':
-    N = 1000  # number of data points
+    N = 5000  # number of data points
     T = np.linspace(0, 4 * np.pi, N)
-    y = 3.0 * np.sin(T + 0.001) + 0.5 + np.random.randn(N)  # create artificial data with noise
+    y = 3.0 * np.sin(T + 0.1) + 0.5 + np.random.randn(N)  # create artificial data with noise
     m = SinusoidalRegression()
     m.fit_sinusoidal_model(T, y)
     print(m.params_)
