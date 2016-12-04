@@ -38,16 +38,19 @@ class MultipleSinusoidalRegression(object):
         return y_predicted
 
 if __name__ == '__main__':
-    N = 5000  # number of data points
-    T = np.linspace(0, 4 * np.pi, N)
-    y = 3.0 * np.sin(T + 0.1) + 0.5 + np.random.randn(N)  # create artificial data with noise
+    N = 10000  # number of data points
+    T = np.linspace(0, 12 * np.pi, N)
+    y = 2.0 * np.sin(T) + 1.0 * np.cos(0.5*T) + 0.5 + np.random.randn(N)  # create artificial data with noise
     # m = SinusoidalRegression()
-    m = MultipleSinusoidalRegression(1)
+    m = MultipleSinusoidalRegression(50)
     m.fit_sinusoidal_model(T, y)
     print(m.params_)
     y_predicted = m.predict(T)
+    plt.subplot(2, 1, 1)
     plt.plot(y, '.')
     plt.plot(y_predicted, label='after fitting', color='r')
     plt.legend()
+    plt.subplot(2, 1, 2)
+    plt.plot(y - y_predicted, '.')
     plt.show()
 
