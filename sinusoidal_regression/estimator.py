@@ -2,6 +2,7 @@ from scipy.optimize import leastsq, least_squares
 import numpy as np
 import pylab as plt
 import seaborn as sns
+import datetime
 
 class SinusoidalRegression(object):
     def fit_sinusoidal_model(self, t, y):
@@ -27,14 +28,21 @@ class MultipleSinusoidalRegression(object):
         std_guess = 3 * np.std(y) / (2 ** 0.5)
         frequency_guess = 1
         phase_guess = 0
-        f = lambda P: sum([p[0] * np.sin(p[1] * t + p[2]) + p[3] for p in P.reshape(len(P)/4, 4)]) - y
+        f = lambda P: self._compute_sine(t, P) - y
         P_mle = leastsq(f, np.array([[std_guess, frequency_guess, phase_guess, mean_guess] for i in range(self.n_waves)]))[
             0]
-        self.params_ = P_mle.reshape(len(P_mle)/4, 4)
+        self.params_ = P_mle
+
+    def _compute_sine(self, T, params):
+        mean = params[0]
+        stds = params[1::3]
+        frequencies = params[2::3]
+        phases = params[3::3]
+        return mean + sum([std*np.sin(freq*T + phase) for std, freq, phase in zip(stds, frequencies, phases)])
 
     def predict(self, t):
         P_mle = self.params_
-        y_predicted = sum([p[0] * np.sin(p[1] * t + p[2]) + p[3] for p in P_mle])
+        y_predicted = self._compute_sine(t, P_mle)
         return y_predicted
 
 if __name__ == '__main__':
@@ -43,7 +51,9 @@ if __name__ == '__main__':
     y = 2.0 * np.sin(T) + 1.0 * np.cos(0.5*T) + 0.5 + np.random.randn(N)  # create artificial data with noise
     # m = SinusoidalRegression()
     m = MultipleSinusoidalRegression(50)
+    print(datetime.datetime.now())
     m.fit_sinusoidal_model(T, y)
+    print(datetime.datetime.now())
     print(m.params_)
     y_predicted = m.predict(T)
     plt.subplot(2, 1, 1)
